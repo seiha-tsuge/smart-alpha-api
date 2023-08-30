@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Type: String
+    Description: The environment (dev, stg, or prod) for this deployment
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+
+Resources:
+  MyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub my-lambda-function-${Environment}
+      Runtime: go1.x
+      Handler: main
+      CodeUri: ./
+      Environment:
+        Variables:
+          APP_ENV: !Ref Environment
+      Events:
+        MyAPI:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+
+Outputs:
+  ApiURL:
+    Description: URL of the API
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
